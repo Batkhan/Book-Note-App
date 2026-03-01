@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import DropDownLink from "./DropDownLink";
 import { Link } from "react-router-dom";
 
 // MUI components
@@ -8,7 +9,6 @@ import Navbar from "react-bootstrap/Navbar";
 import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
-import Box from "@mui/material/Box";
 import BrandLogo from "../assets/journal-bookmark-fill.svg";
 
 // Custom hooks
@@ -58,12 +58,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
-
-const filterBookKey = (key = "") => {
-  // Extract the ID from the key, which is in the format "/works/OL12345W"
-  const match = key.match(/\/works\/OL\d+W/);
-  return match?.[0].split("/").pop() ?? key; // Return the matched ID or the original key if no match
-};
 
 const NavBar = () => {
   const [searchText, setSearchText] = useState("");
@@ -157,59 +151,13 @@ const NavBar = () => {
               )}
               {!loading &&
                 results.map((book) => (
-                  <Link
-                    className="d-flex"
-                    key={filterBookKey(book.key)}
-                    to={`/book/${encodeURIComponent(filterBookKey(book.key))}`}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      setShowDropdown(false);
-                      setSearchText("");
-                    }}
-                    style={{
-                      display: "block",
-                      padding: "5px",
-                      textDecoration: "none",
-                      color: "black",
-                      fontSize: "1em",
-                      borderBottom: "1px solid #9b9595",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        padding: "5px",
-                        width: "70px",
-                        height: "80px",
-                        borderRadius: "5px",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <img
-                        src={
-                          book?.cover_i
-                            ? `https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg`
-                            : "https://dummyimage.com/70x80/cccccc/000000&text=No+Cover"
-                        }
-                        alt="book cover"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "fill",
-                        }}
-                      />
-                    </Box>
-                    <div style={{ paddingLeft: "2px" }}>
-                      <div style={{ fontWeight: "bold" }}>{book.title}</div>
-                      <div
-                        style={{ fontWeight: "lighter", fontSize: "0.9rem" }}
-                      >
-                        by{" "}
-                        {Array.isArray(book?.author_name)
-                          ? book.author_name[0]
-                          : "Unknown Author"}
-                      </div>
-                    </div>
-                  </Link>
+                  //Dropdown component that links to book details page with book key and author key as params
+                  <DropDownLink
+                    key={book.key}
+                    book={book}
+                    setShowDropdown={setShowDropdown}
+                    setSearchText={setSearchText}
+                  />
                 ))}
             </div>
           )}
