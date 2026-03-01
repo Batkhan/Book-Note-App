@@ -35,7 +35,7 @@ export const searchBooks = async (req, res) => {
     const result = await axios.get(`${openLibraryUrl}search.json`, {
       params: {
         q: query,
-        fields: "key,cover_i,title,author_name",
+        fields: "key,cover_i,title,author_name,author_key",
         limit: 10,
       },
     });
@@ -48,16 +48,23 @@ export const searchBooks = async (req, res) => {
 
 // Get book details from external API (Open Library) with book ID
 export const getBookDetails = async (req, res) => {
-  const bookId = req.params.id;
-  if (!bookId) {
-    return res.status(400).json({ error: "Book ID is required" });
+  const bookId = req.params.bookId;
+  const authorId = req.params.authorId;
+  if (!bookId && !authorId) {
+    return res
+      .status(400)
+      .json({ error: "Book ID and Author ID are required" });
   }
 
   try {
-    const result = await axios.get(
-      `${openLibraryUrl}works/${bookId}.json`
+    const bookResult = await axios.get(`${openLibraryUrl}works/${bookId}.json`);
+    const authorResult = await axios.get(
+      `${openLibraryUrl}authors/${authorId}.json`
     );
-    res.status(200).json(result.data);
+
+    const bookData = { ...bookResult.data, author: authorResult.data };
+    console.log("Book Data:", bookData);
+    res.status(200).json(bookData);
   } catch (error) {
     console.error("Error fetching book details:", error);
     res
