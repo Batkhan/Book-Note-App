@@ -9,6 +9,7 @@ import Navbar from "react-bootstrap/Navbar";
 import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
+import Box from "@mui/material/Box";
 import BrandLogo from "../assets/journal-bookmark-fill.svg";
 
 // Custom hooks
@@ -81,8 +82,6 @@ const NavBar = () => {
       document.removeEventListener("pointerdown", handleOutsidePointer);
   }, [setShowDropdown]);
 
-  const dropdownStyle = { padding: "10px 10px" };
-
   return (
     <Navbar
       className="navbar"
@@ -144,10 +143,10 @@ const NavBar = () => {
           />
 
           {showDropdown && (
-            <div className="nav-search-dropdown">
-              {loading && <div style={dropdownStyle}>Searching..</div>}
+            <Box className="nav-search-dropdown">
+              {loading && <Box className="nav-search-dropdown__loading">Searching..</Box>}
               {!loading && results.length == 0 && (
-                <div style={dropdownStyle}>No items match your search</div>
+                <Box className="nav-search-dropdown__empty">No items match your search</Box>
               )}
               {!loading &&
                 results.map((book) => (
@@ -159,7 +158,7 @@ const NavBar = () => {
                     setSearchText={setSearchText}
                   />
                 ))}
-            </div>
+            </Box>
           )}
         </Search>
       </Container>

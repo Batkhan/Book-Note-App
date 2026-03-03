@@ -33,6 +33,28 @@ h3,
   color: white;
 }
 
+.nav-search-dropdown__loading,
+.nav-search-dropdown__empty {
+  padding: 10px;
+}
+
+/* Hero Items */
+.hero-search-button {
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 1.25px;
+  padding-bottom: 1.25px;
+  border-radius: 2px;
+  text-transform: none;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #773e3e !important;
+}
+
+.hero-search-button:hover {
+  background-color: #530909 !important;
+}
+
 /* Book Detail Container */
 .cover-image__container {
   padding: 5px;
@@ -71,9 +93,24 @@ h3,
   color: #447fd6;
   font-weight: 600;
   cursor: pointer;
-  text-decoration: underline;
 }
 
 .read-more-btn:hover {
   color: #0a58ca;
+  text-decoration: underline;
+}
+
+.book-meta__container {
+  display: flex;
+  flex: 1 1 auto;
+  padding: 20px;
+  justify-content: center;
+  gap: 20px;
+  font-size: 0.9em;
+}
+
+.book-meta__item {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 30px;
 }
