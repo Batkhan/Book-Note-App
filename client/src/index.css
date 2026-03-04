@@ -93,6 +93,7 @@ h3,
 .book-description {
   display: -webkit-box;
   -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -100,6 +101,7 @@ h3,
 .book-description--expanded {
   display: block;
   -webkit-line-clamp: unset;
+  line-clamp: unset;
   -webkit-box-orient: unset;
   overflow: visible;
 }
