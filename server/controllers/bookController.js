@@ -36,7 +36,7 @@ export const searchBooks = async (req, res) => {
       params: {
         q: query,
         fields: "key,cover_i,title,author_name,author_key,cover_edition_key",
-        limit: 10,
+        limit: 20,
       },
     });
     res.status(200).json(result.data);
@@ -63,9 +63,15 @@ export const getBookDetails = async (req, res) => {
     const authorResult = await axios.get(
       `${openLibraryUrl}authors/${authorId}.json`
     );
-
-    const bookData = { ...bookResult.data, author: authorResult.data, edition: bookPublishResult.data };
-    console.log("Book Data:", bookData);
+     
+    let languageResult = {};
+    if (bookPublishResult.data?.languages?.length > 0) {
+      languageResult = await axios.get(
+        `${openLibraryUrl}${encodeURIComponent(bookPublishResult.data.languages[0].key)}.json`
+      );
+    }
+    
+    const bookData = { ...bookResult.data, author: authorResult.data, edition: bookPublishResult.data, languages: languageResult?.data };
     res.status(200).json(bookData);
   } catch (error) {
     console.error("Error fetching book details:", error);
