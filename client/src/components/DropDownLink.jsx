@@ -9,49 +9,28 @@ const DropDownLink = (props) => {
     key: bookKey = "*",
     author_name: rawAuthorName = [],
     author_key: rawAuthorKey = [],
+    cover_edition_key = "",
   } = props?.book ?? {};
 
   const author_name = Array.isArray(rawAuthorName)
     ? rawAuthorName[0]
     : "Unknown Author";
   const authorKey = Array.isArray(rawAuthorKey) ? rawAuthorKey[0] : "";
-
-  const filterBookKey = () => {
-    // Extract the ID from the key, which is in the format "/works/OL12345W"
-    const bookMatch = bookKey.match(/\/works\/OL\d+W/);
-
-    return bookMatch?.[0].split("/").pop() ?? "";
-  };
+  const bookId = bookKey.includes("/works/")
+    ? bookKey.split("/").pop()
+    : bookKey;
 
   return (
     <Link
-      className="d-flex"
-      to={`/book/${encodeURIComponent(
-        filterBookKey(),
-      )}/author/${encodeURIComponent(authorKey)}`}
+      className="d-flex dropdown-link"
+      to={`/book/${encodeURI(bookId)}?author=${encodeURIComponent(authorKey)}&edition=${encodeURIComponent(cover_edition_key)}`}
       onMouseDown={(e) => e.preventDefault()}
       onClick={() => {
         props.setShowDropdown(false);
         props.setSearchText("");
       }}
-      style={{
-        display: "block",
-        padding: "5px",
-        textDecoration: "none",
-        color: "black",
-        fontSize: "1em",
-        borderBottom: "1px solid #9b9595",
-      }}
     >
-      <Box
-        sx={{
-          padding: "5px",
-          width: "70px",
-          height: "80px",
-          borderRadius: "5px",
-          flexShrink: 0,
-        }}
-      >
+      <Box className="dropdown-link--cover">
         <img
           src={
             typeof cover_i === "number"
@@ -59,11 +38,6 @@ const DropDownLink = (props) => {
               : "https://dummyimage.com/70x80/cccccc/000000&text=No+Cover"
           }
           alt="book cover"
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "fill",
-          }}
         />
       </Box>
       <Box sx={{ paddingLeft: "2px" }}>
