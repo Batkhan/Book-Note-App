@@ -58,20 +58,31 @@ export const getBookDetails = async (req, res) => {
   }
 
   try {
+    // This endpoint return the book details, author details, edition details, and language details in a single response
+
+    //book Details like
     const bookResult = await axios.get(`${openLibraryUrl}works/${bookId}.json`);
-    const bookPublishResult = await axios.get(`${openLibraryUrl}books/${editionId}.json`);
+    //author details like name, birth date, death date, etc.
     const authorResult = await axios.get(
       `${openLibraryUrl}authors/${authorId}.json`
     );
-     
+    
+    //This endpoint will only run if editionId and bookResult.data?.covers?.length > 0 are present, otherwise it will return an empty object. This is because the edition details are only relevant if there are publishing details available for the book and if yes, languages data present?. If there is no data, then there is no need to fetch the edition details, which can save time and resources.
+
+    //edition details like publish date, publisher, number of pages, etc.
+    let bookPublishResult = {};
     let languageResult = {};
-    if (bookPublishResult.data?.languages?.length > 0) {
-      languageResult = await axios.get(
-        `${openLibraryUrl}${encodeURIComponent(bookPublishResult.data.languages[0].key)}.json`
-      );
+    if (editionId) {
+      bookPublishResult = await axios.get(`${openLibraryUrl}books/${editionId}.json`);
+      //language details
+      if (bookPublishResult.data?.languages?.length > 0) {
+        languageResult = await axios.get(
+          `${openLibraryUrl}${encodeURIComponent(bookPublishResult.data.languages[0].key)}.json`
+        );
+      }
     }
     
-    const bookData = { ...bookResult.data, author: authorResult.data, edition: bookPublishResult.data, languages: languageResult?.data };
+    const bookData = { ...bookResult.data, author: authorResult?.data, edition: bookPublishResult?.data, languages: languageResult?.data };
     res.status(200).json(bookData);
   } catch (error) {
     console.error("Error fetching book details:", error);
