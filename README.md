@@ -10,9 +10,9 @@ The Book Note App is a web application that allows users to keep track of their 
 - **Browse Books**: Users can view all their books in a list format.
 
 ## Technologies Used
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: Node.js, Express
-- **Database**: MongoDB
+- **Frontend**: HTML, CSS, JavaScript (React.js)
+- **Backend**: Node.js, Express, Axios
+- **Database**: PostgreSQL
 
 ## Getting Started
 
