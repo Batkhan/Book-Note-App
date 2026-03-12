@@ -1,11 +1,52 @@
 import { useState } from "react";
-import { Box, Button, Tooltip, Modal, TextField, Stack } from "@mui/material";
+import {
+  Box,
+  Button,
+  Tooltip,
+  Modal,
+  TextField,
+  Stack,
+  Typography,
+} from "@mui/material";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 
 const AddNoteModal = (props) => {
   const [open, setOpen] = useState(false);
+  const [note, setNote] = useState(props.note ?? "");
+  const [error, setError] = useState("");
+
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setError("");
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const trimmedNote = note.trim();
+
+    if (!trimmedNote) {
+      setError("Please enter a note before submitting.");
+      return;
+    }
+
+    console.log("Submitting note:", trimmedNote);
+    props.onSubmit?.({
+      note: trimmedNote,
+      bookTitle: props?.bookTitle,
+      bookAuthor: props?.bookAuthor,
+      userName: props?.userName,
+    });
+
+    setNote("");
+    handleClose();
+  };
+
+  const handleReset = () => {
+    setNote(props.initialNote ?? "");
+    setError("");
+  };
 
   return (
     <Box>
@@ -22,45 +63,80 @@ const AddNoteModal = (props) => {
         aria-describedby="modal-modal-description"
       >
         <Box className="modal-content__container">
-          <Box className="d-flex gap-1 mb-2">
-            <Box className="flex-grow-1">
-              <h6>
-                <span style={{ fontWeight: "lighter" }}>Title: </span>
-                {props?.bookTitle || "Unknown Title"}{" "}
-              </h6>
-              <h6>
-                <span style={{ fontWeight: "lighter" }}>Author: </span>
-                {props?.bookAuthor || "Unknown Author"}
-              </h6>
-            </Box>
-            <Box className="flex-grow-1 text-end">
-              <h6 style={{ fontWeight: "lighter" }}>
-                User: {props?.userName || "Unknown User"}
-              </h6>
-            </Box>
-          </Box>
           <Box
             component="form"
-            sx={{ "& .MuiTextField-root": { mt: 2, mb: 2, width: "62ch" } }}
-            noValidate
+            onSubmit={handleSubmit}
             autoComplete="off"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
           >
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              justifyContent="space-between"
+              spacing={2}
+            >
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Title
+                </Typography>
+                <Typography variant="body1">
+                  {props?.bookTitle || "Unknown Title"}
+                </Typography>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  sx={{ mt: 1.5 }}
+                >
+                  Author
+                </Typography>
+                <Typography variant="body1">
+                  {props?.bookAuthor || "Unknown Author"}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  User
+                </Typography>
+                <Typography variant="body1">
+                  {props?.userName || "Unknown User"}
+                </Typography>
+              </Box>
+            </Stack>
             <TextField
-              id="outlined-textarea"
-              label="Add your note here"
+              id="book-note"
+              name="note"
+              label="Add your note"
               placeholder="Write your thoughts about the book..."
               multiline
+              minRows={8}
               maxRows={15}
+              fullWidth
+              required
+              value={note}
+              onChange={(event) => {
+                setNote(event.target.value);
+                if (error) {
+                  setError(error);
+                }
+              }}
+              error={Boolean(error)}
+              helperText={error || `${note.trim().length} characters`}
             />
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button variant="outlined" color="inherit" onClick={handleReset}>
+                Reset
+              </Button>
+              <Button variant="outlined" color="inherit" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="contained" color="success">
+                Submit
+              </Button>
+            </Stack>
           </Box>
-          <Stack direction="row" spacing={2}>
-            <Button variant="contained" color="success">
-              Submit
-            </Button>
-            <Button variant="outlined" color="white">
-              Edit
-            </Button>
-          </Stack>
         </Box>
       </Modal>
     </Box>
