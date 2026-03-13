@@ -24,18 +24,24 @@ const usePostBookNote = () => {
         throw new Error(postData.message || "Failed to post note");
       }
 
+      //For testing purpose
+      // await new Promise((resolve) => {
+      //   setTimeout(resolve, 1000);
+      // });
+
       setSuccess(true);
       console.log("Note submitted:", payload);
-      return postData;
+      // return postData;
     } catch (error) {
       setError(error.message);
       console.error("Error posting note:", error.message);
     } finally {
       setLoading(false);
+      return { success, error, data: postData ?? "Data corrupted" };
     }
   };
 
-  return { postBookNote, loading, success, error };
+  return { postBookNote, loading };
 };
 
 export default usePostBookNote;

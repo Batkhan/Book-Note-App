@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AddNoteModal from "../components/AddNoteModal";
 import usePostBookNote from "../hooks/usePostBookNote";
+import AutohideSnackbar from "./Snackbar";
 // MUI components
 import { Box, Grid } from "@mui/material";
 //import EditNoteIcon from "@mui/icons-material/EditNote";
@@ -8,17 +9,27 @@ import StarIcon from "@mui/icons-material/Star";
 
 const BookCoverGrid = (props) => {
   const [hoveredStar, setHoveredStar] = useState(0);
+  const [snackBar, setSnackBar] = useState({
+    open: false,
+    variant: "success",
+    message: "",
+  });
 
-  const { postBookNote, loading, success, error } = usePostBookNote();
+  const { postBookNote, loading } = usePostBookNote();
   async function onSubmit(params) {
     const response = await postBookNote(params);
-    if (success) {
-      console.log("Note posted successfully:", response);
-      // Add success snackbar
+    if (response.success) {
+      console.log("Note posted successfully:", response.data);
     } else {
-      console.error("Failed to post note:", error);
-      //Add failure snackbar
+      console.error("Failed to post note:", response.error);
     }
+
+    setSnackBar({
+      open: true,
+      variant: response.success ? "success" : "error",
+      message: response.success ? "Note saved successfully" : response.error,
+    });
+    return response;
   }
 
   return (
@@ -61,8 +72,17 @@ const BookCoverGrid = (props) => {
           bookTitle={props.bookTitle}
           bookAuthor={props.bookAuthor}
           onSubmit={onSubmit}
+          loading={loading} //will be solved later
         />
       </Box>
+      <AutohideSnackbar
+        open={snackBar.open}
+        message={snackBar.message}
+        variant={snackBar.variant}
+        onClose={() => {
+          setSnackBar((currentValue) => ({ ...currentValue, open: false }));
+        }}
+      />
     </Grid>
   );
 };
