@@ -33,11 +33,18 @@ const usePostBookNote = () => {
       console.log("Note submitted:", payload);
       // return postData;
     } catch (error) {
+      //console.log(postResponse);
       setError(error.message);
       console.error("Error posting note:", error.message);
     } finally {
       setLoading(false);
-      return { success, error, data: postData ?? "Data corrupted" };
+      return {
+        success,
+        error,
+        data: postResponse?.ok
+          ? postData
+          : "Data corrupted / Page not available",
+      };
     }
   };
 
