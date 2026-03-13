@@ -21,26 +21,27 @@ const AddNoteModal = (props) => {
     setError("");
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const trimmedNote = note.trim();
-
     if (!trimmedNote) {
       setError("Please enter a note before submitting.");
       return;
     }
 
     console.log("Submitting note:", trimmedNote);
-    props.onSubmit?.({
+    const response = await props.onSubmit?.({
       note: trimmedNote,
       bookTitle: props?.bookTitle,
       bookAuthor: props?.bookAuthor,
       userName: props?.userName,
     });
 
-    setNote("");
-    handleClose();
+    if (response.success) {
+      setNote("");
+      handleClose();
+    }
   };
 
   const handleReset = () => {
@@ -119,7 +120,7 @@ const AddNoteModal = (props) => {
               onChange={(event) => {
                 setNote(event.target.value);
                 if (error) {
-                  setError(error);
+                  setError("");
                 }
               }}
               error={Boolean(error)}
@@ -132,7 +133,13 @@ const AddNoteModal = (props) => {
               <Button variant="outlined" color="inherit" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" variant="contained" color="success">
+              <Button
+                type="submit"
+                variant="contained"
+                color="success"
+                loading={props.loading}
+                loadingPosition="start"
+              >
                 Submit
               </Button>
             </Stack>
