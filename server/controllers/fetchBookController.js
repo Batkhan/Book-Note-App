@@ -7,8 +7,10 @@ const openLibraryUrl = "http://openlibrary.org/";
 // Get books from database for a user
 export const getBooks = async (req, res) => {
   const userId = req.params.id;
-  if (!query) {
-    return res.status(400).json({ error: "Query parameter 'q' is required" });
+  if (!userId) {
+    return res
+      .status(400)
+      .json({ error: "User ID is required / Need Log In first" });
   }
   try {
     const books = await db.query(
@@ -66,23 +68,32 @@ export const getBookDetails = async (req, res) => {
     const authorResult = await axios.get(
       `${openLibraryUrl}authors/${authorId}.json`
     );
-    
+
     //This endpoint will only run if editionId and bookResult.data?.covers?.length > 0 are present, otherwise it will return an empty object. This is because the edition details are only relevant if there are publishing details available for the book and if yes, languages data present?. If there is no data, then there is no need to fetch the edition details, which can save time and resources.
 
     //edition details like publish date, publisher, number of pages, etc.
     let bookPublishResult = {};
     let languageResult = {};
     if (editionId) {
-      bookPublishResult = await axios.get(`${openLibraryUrl}books/${editionId}.json`);
+      bookPublishResult = await axios.get(
+        `${openLibraryUrl}books/${editionId}.json`
+      );
       //language details
       if (bookPublishResult.data?.languages?.length > 0) {
         languageResult = await axios.get(
-          `${openLibraryUrl}${encodeURIComponent(bookPublishResult.data.languages[0].key)}.json`
+          `${openLibraryUrl}${encodeURIComponent(
+            bookPublishResult.data.languages[0].key
+          )}.json`
         );
       }
     }
-    
-    const bookData = { ...bookResult.data, author: authorResult?.data, edition: bookPublishResult?.data, languages: languageResult?.data };
+
+    const bookData = {
+      ...bookResult.data,
+      author: authorResult?.data,
+      edition: bookPublishResult?.data,
+      languages: languageResult?.data,
+    };
     res.status(200).json(bookData);
   } catch (error) {
     console.error("Error fetching book details:", error);

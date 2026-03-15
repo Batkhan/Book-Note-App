@@ -1,12 +1,36 @@
 import { useState } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
-import EditNoteIcon from "@mui/icons-material/EditNote";
+import AddNoteModal from "../components/AddNoteModal";
+import usePostBookNote from "../hooks/usePostBookNote";
+import AutohideSnackbar from "./Snackbar";
+// MUI components
+import { Box, Grid } from "@mui/material";
+//import EditNoteIcon from "@mui/icons-material/EditNote";
 import StarIcon from "@mui/icons-material/Star";
 
 const BookCoverGrid = (props) => {
   const [hoveredStar, setHoveredStar] = useState(0);
+  const [snackBar, setSnackBar] = useState({
+    open: false,
+    variant: "success",
+    message: "",
+  });
+
+  const { postBookNote, loading } = usePostBookNote();
+  async function onSubmit(params) {
+    const response = await postBookNote(params);
+    if (response.success) {
+      console.log("Note posted successfully:", response.data);
+    } else {
+      console.error("Failed to post note:", response.error);
+    }
+
+    setSnackBar({
+      open: true,
+      variant: response.success ? "success" : "error",
+      message: response.success ? "Note saved successfully" : response.error,
+    });
+    return response;
+  }
 
   return (
     <Grid
@@ -44,19 +68,25 @@ const BookCoverGrid = (props) => {
         ))}
       </Box>
       <Box className="d-flex gap-2">
-        <Button sx={{ color: "#414141" }} href="#">
-          <p style={{ margin: 0 }}>
-            <EditNoteIcon sx={{ height: "40px", width: "40px" }} />
-            Note
-          </p>
-        </Button>
-        <Button sx={{ color: "#414141" }} href="#">
-          <p style={{ margin: 0 }}>
-            <StarIcon sx={{ height: "40px", width: "40px" }} />
-            Rate
-          </p>
-        </Button>
+        <AddNoteModal
+          bookTitle={props.bookTitle}
+          authorName={props.authorName}
+          authorID={props.authorId}
+          bookOLID={props.bookOLID}
+          onSubmit={onSubmit}
+          loading={loading}
+        />
       </Box>
+
+      {/* success / error message for good UX */}
+      <AutohideSnackbar
+        open={snackBar.open}
+        message={snackBar.message}
+        variant={snackBar.variant}
+        onClose={() => {
+          setSnackBar((currentValue) => ({ ...currentValue, open: false }));
+        }}
+      />
     </Grid>
   );
 };
